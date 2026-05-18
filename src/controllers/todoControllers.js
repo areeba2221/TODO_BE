@@ -1,7 +1,7 @@
 const Todo = require('../models/Todo');
 
 // Read operation all
-exports.getAllTodos = async (req, res) => {
+exports.getTodos = async (req, res) => {
     try {
         const todos = await Todo.find();
         res.json(todos);
