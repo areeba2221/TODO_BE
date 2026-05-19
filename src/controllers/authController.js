@@ -1,9 +1,17 @@
+const User = require('../models/User');
 const authService = require('../services/authService');
 const generateToken = require('../utils/generateToken');
 
+const cookieOption = {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 24 * 60 * 60 * 1000
+};
+
 exports.register = async (req, res) => {
 
-    console.log('r');
 
     try {
 
@@ -11,9 +19,15 @@ exports.register = async (req, res) => {
 
         const user = await authService.registerUser(name, email, password );
 
-        res.status(201).json({
+        const token = generateToken(user._id);
+
+        res.status(201)
+        .cookie('token', token , cookieOption)
+        .setHeader("Access-Control-Allow-Credentials", "true")
+        .json({
             success: true,
-            token: generateToken(user._id)
+            token,
+            message: "Registration successful"
         });
 
     } catch (err) {
@@ -34,9 +48,15 @@ exports.login = async (req, res) => {
 
         const user = await authService.loginUser( email, password );
 
-        res.status(200).json({
+        const token = generateToken(user._id);
+
+        res.status(200)
+        .cookie('token', token , cookieOption)
+        console.log("COOKIE SET");
+        res.json({
             success: true,
-            token: generateToken(user._id)
+            token,
+            message: "Login successful"
         });
 
     } catch (err) {

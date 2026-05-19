@@ -7,10 +7,10 @@ const protect = require('../middleware/authMiddleware');
 
 router.get('/' , protect , todoController.getTodos);
 
-router.post('/', todoController.createTodo);
+router.post('/', protect , todoController.createTodo);
 
-router.put('/:id', todoController.updateTodo);
+router.put('/:id', protect , todoController.updateTodo);
 
-router.delete('/:id', todoController.deleteTodo);
+router.delete('/:id', protect , todoController.deleteTodo);
 
 module.exports = router;
