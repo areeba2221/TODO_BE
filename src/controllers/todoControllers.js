@@ -35,7 +35,7 @@ exports.createTodo = async (req, res) => {
             });
         }
 
-        const newTodo = await todoService.createTodo(description);
+        const newTodo = await todoService.createTodo(description, req.user._id);
 
         res.status(201).json({
             success: true,

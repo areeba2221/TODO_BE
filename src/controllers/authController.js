@@ -50,10 +50,11 @@ exports.login = async (req, res) => {
 
         const token = generateToken(user._id);
 
+        console.log("COOKIE SET");
+
         res.status(200)
         .cookie('token', token , cookieOption)
-        console.log("COOKIE SET");
-        res.json({
+        .json({
             success: true,
             token,
             message: "Login successful"
