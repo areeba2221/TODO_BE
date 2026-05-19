@@ -15,9 +15,9 @@
 
 require('dotenv').config();
 
-const app = require('./src/app');
-const Todo = require('./src/models/Todo');
-const connectDB = require('./src/config/db');
+const app = require('./app');
+const Todo = require('./models/Todo');
+const connectDB = require('./config/db');
 
 const PORT = process.env.PORT || 5000;
 
