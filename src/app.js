@@ -4,13 +4,15 @@ const todoRoute = require('./routes/todoRoute');
 const authRoute = require('./routes/authRoute');
 const cookieParser = require('cookie-parser');
 
+require('dotenv').config();
+
 
 
 const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.ORIGIN,
     credentials: true
 })); 
 app.use(cookieParser());
