@@ -7,18 +7,14 @@ const protect = async (req, res, next) => {
     console.log("HEADERS:", req.headers);
 console.log("COOKIE HEADER:", req.headers.cookie);
 
-    // cookie check
-    if (req.cookies && req.cookies.token) {
-        token = req.cookies.token;
+    // header check
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
     }
 
-    // header check
-    if (!token && req.headers.authorization) {
-        const authHeader = req.headers.authorization;
-
-        if (authHeader.startsWith("Bearer ")) {
-            token = authHeader.split(" ")[1];
-        }
+    // cookie check
+    else if (req.cookies?.token) {
+        token = req.cookies.token;
     }
 
     console.log("FINAL TOKEN:", token);
