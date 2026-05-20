@@ -4,7 +4,6 @@ const todoRoute = require('./routes/todoRoute');
 const authRoute = require('./routes/authRoute');
 const cookieParser = require('cookie-parser');
 
-require('dotenv').config();
 
 
 
