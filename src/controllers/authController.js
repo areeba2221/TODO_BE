@@ -75,10 +75,8 @@ exports.register = async (req, res) => {
 
         res.status(201)
         .cookie('token', token, cookieOption)
-        .setHeader("Access-Control-Allow-Credentials", "true")
         .json({
             success: true,
-            token,
             message: "Registration successful"
         });
 
