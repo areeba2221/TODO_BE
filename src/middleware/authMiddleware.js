@@ -4,9 +4,6 @@ const User = require('../models/User');
 const protect = async (req, res, next) => {
     let token;
 
-    console.log("HEADERS:", req.headers);
-console.log("COOKIE HEADER:", req.headers.cookie);
-
     // header check
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1];
@@ -16,8 +13,6 @@ console.log("COOKIE HEADER:", req.headers.cookie);
     else if (req.cookies?.token) {
         token = req.cookies.token;
     }
-
-    console.log("FINAL TOKEN:", token);
 
     if (!token) {
         return res.status(401).json({
@@ -41,6 +36,19 @@ console.log("COOKIE HEADER:", req.headers.cookie);
         next();
 
     } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Token expired, please login again'
+            });
+        }
+
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token, please login again'
+            });
+        }
         return res.status(401).json({
             success: false,
             message: 'Not authorized'

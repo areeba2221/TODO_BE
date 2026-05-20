@@ -1,6 +1,5 @@
 require('dotenv').config();
 
-
 const app = require('./app');
 const Todo = require('./models/Todo');
 const connectDB = require('./config/db');

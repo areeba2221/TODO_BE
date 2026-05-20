@@ -4,9 +4,6 @@ const todoRoute = require('./routes/todoRoute');
 const authRoute = require('./routes/authRoute');
 const cookieParser = require('cookie-parser');
 
-
-
-
 const app = express();
 
 app.use(express.json());
