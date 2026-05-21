@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const authService = require('../services/authService');
 const generateToken = require('../utils/generateToken');
+const bcrypt = require('bcryptjs');
 
 const cookieOption = {
     httpOnly: true,
@@ -38,25 +39,6 @@ const validateRegisterInput = (name, email, password) => {
     return errors;
 };
 
-const validateLoginInput = (email, password) => {
-    const errors = [];
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) {
-        errors.push('Email is required');
-    } else if (!emailRegex.test(email)) {
-        errors.push('Please enter a valid email address');
-    }
-
-    if (!password) {
-        errors.push('Password is required');
-    } else if (password.length < 8) {
-        errors.push('Password must be at least 8 characters');
-    }
-
-    return errors;
-};
-
 exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -65,8 +47,8 @@ exports.register = async (req, res) => {
         if (errors.length > 0) {
             return res.status(422).json({
                 success: false,
-                message: errors[0],   
-                errors                
+                message: errors[0],
+                errors
             });
         }
 
@@ -89,19 +71,9 @@ exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const errors = validateLoginInput(email, password);
-        if (errors.length > 0) {
-            return res.status(422).json({
-                success: false,
-                message: errors[0],  
-                errors                
-            });
-        }
-
         const user = await authService.loginUser(email.toLowerCase().trim(), password);
         const token = generateToken(user._id);
 
-        console.log("COOKIE SET");
         res.status(200)
         .cookie('token', token, cookieOption)
         .json({ success: true, token, message: "Login successful" });
@@ -110,6 +82,7 @@ exports.login = async (req, res) => {
         res.status(400).json({ success: false, message: err.message });
     }
 };
+
 exports.getMe = async (req, res) => {
     try {
         res.status(200).json({
@@ -120,6 +93,7 @@ exports.getMe = async (req, res) => {
         res.status(401).json({ success: false, message: err.message });
     }
 };
+
 exports.logout = async (req, res) => {
     try {
         res.clearCookie('token', {
@@ -129,6 +103,47 @@ exports.logout = async (req, res) => {
             path: '/'
         });
         res.status(200).json({ success: true, message: 'Logged out successfully' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+exports.changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Both fields are required'
+            });
+        }
+
+        if (newPassword.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: 'New password must be at least 8 characters'
+            });
+        }
+
+        const user = await User.findById(req.user._id).select('+password');
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: 'Current password is incorrect'
+            });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Password changed successfully'
+        });
+
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
