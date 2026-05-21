@@ -3,12 +3,10 @@ const authService = require('../services/authService');
 const generateToken = require('../utils/generateToken');
 const bcrypt = require('bcryptjs');
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 const cookieOption = {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    secure: false,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/',
     maxAge: 24 * 60 * 60 * 1000
 };

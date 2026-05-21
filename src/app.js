@@ -9,9 +9,7 @@ const authRoute = require('./routes/authRoute');
 const app = express();
 app.use(cors({
     origin: process.env.ORIGIN,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    credentials: true
 })); 
 
 app.use(cookieParser());
